@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from app.routers import auth_routes
 
-app = FastAPI(title="RAG-powered-doc")
+app = FastAPI(title="RAG-Powered Doc Q&A")
 app.include_router(auth_routes.router, prefix="/auth", tags=["auth"])
 
 @app.get("/health")
