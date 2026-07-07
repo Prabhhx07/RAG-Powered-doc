@@ -36,6 +36,7 @@ def signup(request: SignupRequest):
     
     return {"message": "User created successfully"}
 
+@router.post("/login")
 def login(request: LoginRequest):
     conn = get_connection()
     cur = conn.cursor()
