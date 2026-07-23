@@ -8,6 +8,23 @@ import os
 
 router = APIRouter()
 
+@router.get("/list")
+def list_documents(current_user: dict = Depends(get_current_user)):
+    conn = get_connection()
+    cur = conn.cursor()
+    user_id = current_user["sub"]
+    cur.execute(
+        "SELECT id, filename, created_at FROM documents WHERE user_id = %s ORDER BY created_at DESC",
+        (user_id,)
+    )
+    rows = cur.fetchall()
+    cur.close()
+    conn.close()
+    return [
+        {"document_id": row[0], "filename": row[1], "created_at": str(row[2])}
+        for row in rows
+    ]
+
 def chunk_text(text: str, chunk_size: int = 500) -> list:
     words = text.split()
     chunks = []
