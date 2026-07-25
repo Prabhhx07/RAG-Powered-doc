@@ -1,8 +1,9 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Request
 from pydantic import BaseModel
 from app.auth import get_current_user
 from app.database import get_connection
 from app.utils.embeddings import get_embedding
+from app.limiter import limiter
 from groq import Groq
 import os
 from dotenv import load_dotenv
@@ -17,9 +18,10 @@ class QueryRequest(BaseModel):
     document_id: int
 
 @router.post("/ask")
-def ask_question(request: QueryRequest, current_user: dict = Depends(get_current_user)):
+@limiter.limit("10/minute")
+def ask_question(request: Request, body: QueryRequest, current_user: dict = Depends(get_current_user)):
 
-    question_embedding = get_embedding(request.question)
+    question_embedding = get_embedding(body.question)
 
     conn = get_connection()
     cur = conn.cursor()
@@ -29,7 +31,7 @@ def ask_question(request: QueryRequest, current_user: dict = Depends(get_current
         WHERE document_id = %s
         ORDER BY embedding <=> %s::vector
         LIMIT 5
-    """, (request.document_id, str(question_embedding)))
+    """, (body.document_id, str(question_embedding)))
 
     rows = cur.fetchall()
     cur.close()
@@ -46,10 +48,9 @@ If the answer is not in the context, say "I don't know based on the provided doc
 Context:
 {context}
 
-Question: {request.question}
+Question: {body.question}
 """
 
-    # <-- paste the try/except block right here, replacing everything below this point
     try:
         response = client.chat.completions.create(
             model="llama-3.3-70b-versatile",
