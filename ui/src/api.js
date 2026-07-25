@@ -53,11 +53,11 @@ export async function apiUploadDocument(file) {
   return data;
 }
 
-export async function apiAsk(question, document_id) {
+export async function apiAsk(question, document_id, history = []) {
   const res = await fetch(`${API}/query/ask`, {
     method: "POST",
     headers: authHeaders(),
-    body: JSON.stringify({ question, document_id }),
+    body: JSON.stringify({ question, document_id, history }),
   });
   const data = await res.json();
   if (!res.ok) throw new Error(data.detail || "Query failed");

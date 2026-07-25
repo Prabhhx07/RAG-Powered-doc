@@ -1,5 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException, Request
 from pydantic import BaseModel
+from typing import List, Optional
 from app.auth import get_current_user
 from app.database import get_connection
 from app.utils.embeddings import get_embedding
@@ -13,9 +14,14 @@ load_dotenv()
 client = Groq(api_key=os.getenv("GROQ_API_KEY"))
 router = APIRouter()
 
+class Exchange(BaseModel):
+    question: str
+    answer: str
+
 class QueryRequest(BaseModel):
     question: str
     document_id: int
+    history: Optional[List[Exchange]] = []
 
 @router.post("/ask")
 @limiter.limit("10/minute")
@@ -42,13 +48,18 @@ def ask_question(request: Request, body: QueryRequest, current_user: dict = Depe
 
     context = "\n\n".join([row[0] for row in rows])
 
-    prompt = f"""Answer the question based only on the following context. 
+    history_text = ""
+    if body.history:
+        for exchange in body.history[-3:]:
+            history_text += f"Previous question: {exchange.question}\nPrevious answer: {exchange.answer}\n\n"
+
+    prompt = f"""Answer the question based only on the following context.
 If the answer is not in the context, say "I don't know based on the provided document."
 
 Context:
 {context}
 
-Question: {body.question}
+{history_text}Question: {body.question}
 """
 
     try:
