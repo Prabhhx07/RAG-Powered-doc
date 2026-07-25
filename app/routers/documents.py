@@ -83,3 +83,29 @@ def upload_document(
         "document_id": document_id,
         "chunks": len(chunks)
     }
+
+@router.delete("/{document_id}")
+def delete_document(document_id: int, current_user: dict = Depends(get_current_user)):
+    conn = get_connection()
+    cur = conn.cursor()
+    user_id = current_user["sub"]
+
+    cur.execute(
+        "SELECT id FROM documents WHERE id = %s AND user_id = %s",
+        (document_id, user_id)
+    )
+    doc = cur.fetchone()
+
+    if not doc:
+        cur.close()
+        conn.close()
+        raise HTTPException(status_code=404, detail="Document not found")
+
+    cur.execute("DELETE FROM chunks WHERE document_id = %s", (document_id,))
+    cur.execute("DELETE FROM documents WHERE id = %s", (document_id,))
+
+    conn.commit()
+    cur.close()
+    conn.close()
+
+    return {"message": "Document deleted successfully", "document_id": document_id}
