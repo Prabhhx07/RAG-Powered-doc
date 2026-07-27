@@ -4,7 +4,7 @@ Upload a PDF, ask questions about it, and get grounded answers pulled directly f
 
 ## Live Demo
 
-[Try it live →]()https://rag-powered-doc.vercel.app
+**[Try it live →](https://rag-powered-doc.vercel.app)**
 
 ## What It Does
 
