@@ -1,4 +1,4 @@
-const API = "http://localhost:8000";
+const API = "https://rag-powered-doc.onrender.com";
 
 export const getToken = () => localStorage.getItem("access_token");
 export const setToken = (t) => localStorage.setItem("access_token", t);
