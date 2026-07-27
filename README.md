@@ -4,10 +4,7 @@ Upload a PDF, ask questions about it, and get grounded answers pulled directly f
 
 ## Live Demo
 
-<!-- 🔗 Add your deployed link here once live, e.g. https://docmind.vercel.app -->
-
-**[Try it live →]()**
-
+[Try it live →]()https://rag-powered-doc.vercel.app
 
 ## What It Does
 
@@ -31,8 +28,6 @@ If the answer isn't in the document, the model says so instead of making somethi
 - 🚦 **Rate limiting** — per-user request limits on the query endpoint
 - 🎨 **Modern React UI** — dark theme, drag-and-drop upload, real-time chat interface
 
-
-
 ## Architecture
 
 ```
@@ -50,7 +45,6 @@ If the answer isn't in the document, the model says so instead of making somethi
                     │ (embeddings) │       │ (LLM answers) │
                     └───────────┘          └───────────────┘
 ```
-
 
 **Request flow for a question:**
 
