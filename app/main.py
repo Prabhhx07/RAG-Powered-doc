@@ -6,6 +6,7 @@ from app.limiter import limiter
 from app.routers import auth_routes
 from app.routers import documents
 from app.routers import query
+from app.database import get_connection
 
 app = FastAPI(title="RAG-Powered Doc Q&A")
 app.state.limiter = limiter
@@ -30,3 +31,13 @@ app.include_router(query.router, prefix="/query", tags=["query"])
 @app.get("/health")
 def health():
     return {"status": "ok"}
+
+@app.get("/health/db")
+def health_db():
+    conn = get_connection()
+    cur = conn.cursor()
+    cur.execute("SELECT 1")
+    cur.fetchone()
+    cur.close()
+    conn.close()
+    return {"status": "ok", "db": "connected"}
