@@ -13,3 +13,8 @@ jobs:
         run: |
           curl -sf https://rag-powered-doc.onrender.com/health
           curl -sf https://rag-powered-doc.onrender.com/health/db
+
+      - name: Ping Supabase REST API
+        run: |
+          curl -sf "https://ssguaixxzxivekkehftz.supabase.co/rest/v1/users?select=id&limit=1" \
+            -H "apikey: ${{ secrets.SUPABASE_ANON_KEY }}"
