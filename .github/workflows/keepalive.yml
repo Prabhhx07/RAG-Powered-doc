@@ -10,6 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Ping backend health + DB
+        continue-on-error: true
         run: |
           curl -sf https://rag-powered-doc.onrender.com/health
           curl -sf https://rag-powered-doc.onrender.com/health/db
